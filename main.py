@@ -2,19 +2,23 @@
 
 import tkinter as tk
 from tkinter import ttk
+from windowsTheme import get_current_theme
 
 import sv_ttk
+import winreg
+
 
 class App():
     def __init__(self):
         self.root = tk.Tk()
-        self.root.geometry("350x200")
+        self.theme = get_current_theme()
+        self.root.geometry("400x400")
         self.root.title("Text App")
         self.mainframe = tk.Frame(self.root)
         self.mainframe.pack(fill=tk.BOTH, expand=True)
 
         # set theme
-        sv_ttk.use_dark_theme(self.root)
+        # sv_ttk.use_dark_theme(self.root)
         # ***********WIDGETS***********
         # Label widget
         self.text = ttk.Label(self.mainframe, text="Hello World", font=('Brass Mono', 30))
@@ -39,6 +43,25 @@ class App():
         self.reverse_text = ttk.Button(self.mainframe, text="Reverse Text", command=self.reverse)
         self.reverse_text.grid(row=3, column=0, pady=10, sticky='NWES')
 
+        # Button widget FOR THEME
+        self.theme_button = ttk.Button(self.mainframe, text="Set Theme", command=self.set_theme)
+        self.theme_button.grid(row=3, column=1, pady=10, sticky='NWES')
+
+        # RADIO BUTTONS FOR CHOOSING THEME
+        self.selection = tk.StringVar(value="default")
+
+        themes = ["System Theme", "Light", "Dark"]
+        values = ["default", "light", "dark"]
+
+        for i, theme in enumerate(themes):
+            ttk.Radiobutton(
+                self.mainframe,
+                text=theme,
+                variable=self.selection,
+                command=self.set_theme(),
+                value=values[i]
+            ).grid(row=4, column=i, pady=10, sticky='NWES')
+
         # ***********END WIDGETS***********
 
         self.root.mainloop()
@@ -58,7 +81,17 @@ class App():
         newtext = newtext[::-1]
         self.text.config(text=newtext)
 
-
+    def set_theme(self):
+        print(self.selection.get())
+        if self.selection.get() == "light":
+            sv_ttk.use_light_theme(self.root)
+            return
+        elif self.selection.get() == "dark":
+            sv_ttk.use_dark_theme(self.root)
+            return
+        else:
+            sv_ttk.set_theme(get_current_theme())
+            return
 
 
 if __name__ == "__main__":
